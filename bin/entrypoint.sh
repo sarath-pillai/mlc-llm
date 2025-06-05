@@ -36,6 +36,7 @@ initialize_submodules_if_needed() {
 
 generate_config_cmake() {
   echo "[INFO] Generating config.cmake..."
+  mkdir -p "$BUILD_DIR"
   cat <<EOF > "$BUILD_DIR/config.cmake"
 set(TVM_SOURCE_DIR 3rdparty/tvm)
 set(CMAKE_BUILD_TYPE $BUILD_TYPE)
