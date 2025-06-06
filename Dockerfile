@@ -73,7 +73,8 @@ RUN pip install \
     requests \
     tqdm \
     pyyaml \
-    click
+    click \
+    auditwheel
 
 # Install TVM
 
