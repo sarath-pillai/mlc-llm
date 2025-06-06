@@ -19,20 +19,37 @@ ENV ENABLE_FLASHINFER=OFF
 ENV CUDA_ARCH=80
 
 # Install system packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     build-essential \
     git \
     curl \
     wget \
     unzip \
+    cmake \
     ninja-build \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
+    python3-pip \ 
     libopenblas-dev \
     libgl1-mesa-dev \
     libvulkan-dev \
     vulkan-tools \
     ca-certificates \
-    bzip2 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    bzip2 \
+    libtinfo-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libncurses5-dev \
+    libffi-dev \
+    libedit-dev \
+    libssl-dev \
+    ocl-icd-opencl-dev \
+    opencl-headers \
+    clinfo \
+    vim \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python Packages useful for devs
 
@@ -40,6 +57,8 @@ RUN pip install \
     pytest \
     scipy \
     numpy \
+    setuptools \
+    wheel \
     transformers \
     tokenizers \
     jupyter \
@@ -55,11 +74,10 @@ RUN pip install \
     pyyaml \
     click
 
-# Install CMake
-RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.24.4/cmake-3.24.4-linux-x86_64.sh -o cmake.sh && \
-    chmod +x cmake.sh && \
-    ./cmake.sh --skip-license --prefix=/usr/local && \
-    rm cmake.sh
+# Install TVM
+
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu mlc-llm-nightly-cpu
 
 # Install Rust
 RUN curl https://sh.rustup.rs -sSf -o rustup-init && \
@@ -68,26 +86,11 @@ RUN curl https://sh.rustup.rs -sSf -o rustup-init && \
     rm rustup-init && \
     rm -rf /root/.rustup /root/.cargo
 
-# Install Miniconda
-RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh && \
-    bash miniconda.sh -b -p "$CONDA_DIR" && \
-    rm miniconda.sh && \
-    "$CONDA_DIR/bin/conda" clean -afy
-
-ENV PATH="/opt/conda/bin:${PATH}"
-
-# Create minimal conda environment
-RUN conda create -n mlc-chat-venv -c conda-forge python=3.11 git && \
-    conda clean -afy
-
-# Optional: conda activation logic
-RUN /opt/conda/bin/conda init bash \
-    && echo "conda activate mlc-chat-venv" >> ~/.bashrc
-
 # Copy and set entrypoint
 COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+EXPOSE 8888 8000
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD []
 
