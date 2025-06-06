@@ -132,20 +132,21 @@ jobs:
         run: |
           mkdir -p build
           cat <<EOF > build/config.cmake
-set(TVM_SOURCE_DIR 3rdparty/tvm)
-set(CMAKE_BUILD_TYPE $BUILD_TYPE)
-set(CMAKE_INSTALL_PREFIX ${{ github.workspace }}/install)
-set(USE_CUDA $ENABLE_CUDA)
-set(USE_VULKAN $ENABLE_VULKAN)
-set(USE_METAL $ENABLE_METAL)
-set(USE_OPENCL $ENABLE_OPENCL)
-set(USE_FLASHINFER $ENABLE_FLASHINFER)
-EOF
+          set(TVM_SOURCE_DIR 3rdparty/tvm)
+          set(CMAKE_BUILD_TYPE $BUILD_TYPE)
+          set(CMAKE_INSTALL_PREFIX ${{ github.workspace }}/install)
+          set(USE_CUDA $ENABLE_CUDA)
+          set(USE_VULKAN $ENABLE_VULKAN)
+          set(USE_METAL $ENABLE_METAL)
+          set(USE_OPENCL $ENABLE_OPENCL)
+          set(USE_FLASHINFER $ENABLE_FLASHINFER)
+          EOF
 
           if [ "$ENABLE_FLASHINFER" = "ON" ]; then
             echo "set(FLASHINFER_CUDA_ARCHITECTURES $CUDA_ARCH)" >> build/config.cmake
             echo "set(CMAKE_CUDA_ARCHITECTURES $CUDA_ARCH)" >> build/config.cmake
           fi
+
 
       - name: Configure and build
         run: |
