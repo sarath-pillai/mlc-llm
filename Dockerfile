@@ -54,6 +54,7 @@ RUN apt-get update && apt-get install -y \
 # Install Python Packages useful for devs
 
 RUN pip install \
+    pylint \
     pytest \
     scipy \
     numpy \
