@@ -6,17 +6,17 @@ ENV CARGO_HOME=/usr/local/cargo
 ENV RUSTUP_HOME=/usr/local/rustup
 ENV PATH="$CARGO_HOME/bin:$PATH"
 
-# Build args
-ARG ENABLE_CUDA=OFF
-ARG ENABLE_CUTLASS=OFF
-ARG ENABLE_CUBLAS=OFF
-ARG ENABLE_ROCM=OFF
-ARG ENABLE_VULKAN=OFF
-ARG ENABLE_METAL=OFF
-ARG ENABLE_OPENCL=OFF
-ARG ENABLE_OPENCL_HOST_PTR=OFF
-ARG ENABLE_FLASHINFER=OFF
-ARG CUDA_ARCH=80
+# Runtime configuration defaults
+ENV ENABLE_CUDA=OFF
+ENV ENABLE_CUTLASS=OFF
+ENV ENABLE_CUBLAS=OFF
+ENV ENABLE_ROCM=OFF
+ENV ENABLE_VULKAN=OFF
+ENV ENABLE_METAL=OFF
+ENV ENABLE_OPENCL=OFF
+ENV ENABLE_OPENCL_HOST_PTR=OFF
+ENV ENABLE_FLASHINFER=OFF
+ENV CUDA_ARCH=80
 
 # Install system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -47,7 +47,7 @@ RUN curl https://sh.rustup.rs -sSf -o rustup-init && \
     rm rustup-init && \
     rm -rf /root/.rustup /root/.cargo
 
-# Install Miniconda and remove installer + caches
+# Install Miniconda
 RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh && \
     bash miniconda.sh -b -p "$CONDA_DIR" && \
     rm miniconda.sh && \
@@ -55,15 +55,15 @@ RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_6
 
 ENV PATH="/opt/conda/bin:${PATH}"
 
-# Create conda env with minimal packages (no cmake)
+# Create minimal conda environment
 RUN conda create -n mlc-chat-venv -c conda-forge python=3.11 git && \
     conda clean -afy
 
-# Add conda activation logic inside bashrc
+# Optional: conda activation logic
 RUN /opt/conda/bin/conda init bash \
-    && echo "conda activate mlc-llm" >> ~/.bashrc
+    && echo "conda activate mlc-chat-venv" >> ~/.bashrc
 
-# Add entrypoint
+# Copy and set entrypoint
 COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

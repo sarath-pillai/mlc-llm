@@ -9,7 +9,6 @@ BUILD_DIR="${BUILD_DIR:-$SOURCE_DIR/build}"
 BUILD_TYPE="${BUILD_TYPE:-RelWithDebInfo}"
 INSTALL_PREFIX="${INSTALL_PREFIX:-$SOURCE_DIR/install}"
 
-# Feature toggles
 ENABLE_CUDA="${ENABLE_CUDA:-OFF}"
 ENABLE_VULKAN="${ENABLE_VULKAN:-OFF}"
 ENABLE_METAL="${ENABLE_METAL:-OFF}"
@@ -18,7 +17,6 @@ ENABLE_FLASHINFER="${ENABLE_FLASHINFER:-OFF}"
 CUDA_ARCH="${CUDA_ARCH:-80}"
 
 ### Functions ###
-
 clone_repo_if_needed() {
   if [ ! -d "$SOURCE_DIR" ]; then
     echo "[INFO] Cloning MLC-LLM from $REPO_URL (branch: $REPO_BRANCH)..."
@@ -78,9 +76,50 @@ build_project() {
   cmake --build . --parallel "$(nproc)"
 }
 
-### Execution ###
-clone_repo_if_needed
-initialize_submodules_if_needed
-generate_config_cmake
-build_project
+run_tests() {
+  echo "[INFO] Running tests..."
+  cd "$SOURCE_DIR/tests/python"
+  pytest .
+}
 
+launch_dev_environment() {
+  echo "=============================="
+  echo " Welcome to MLC-LLM Dev Shell "
+  echo "=============================="
+  echo "Source Dir      : $SOURCE_DIR"
+  echo "Conda Env       : mlc-chat-venv"
+  echo "Python Version  : $(python --version)"
+  echo "CMake Version   : $(cmake --version | head -n 1)"
+  echo "Rust Version    : $(rustc --version)"
+  echo "=============================="
+  exec /bin/bash --login
+}
+
+show_help() {
+  echo "Usage: docker run <image> [DevEnvironment|build|test]"
+  echo ""
+  echo "  DevEnvironment   Start an interactive shell"
+  echo "  build            Build the project"
+  echo "  test             Run pytest from tests/python"
+  echo ""
+  echo "If no argument is provided, this help message is shown."
+}
+
+### Main ###
+case "$1" in
+  DevEnvironment)
+    launch_dev_environment
+    ;;
+  build)
+    clone_repo_if_needed
+    initialize_submodules_if_needed
+    generate_config_cmake
+    build_project
+    ;;
+  test)
+    run_tests
+    ;;
+  *)
+    show_help
+    ;;
+esac
