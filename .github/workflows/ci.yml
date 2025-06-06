@@ -194,7 +194,7 @@ jobs:
                 -DUSE_OPENCL=$ENABLE_OPENCL \
                 -DUSE_FLASHINFER=$ENABLE_FLASHINFER \
                 ..
-          cmake --build . --parallel ${CORES}
+          cmake --build . --parallel ${{ env.CORES }}
         shell: bash
 
       - name: Build Python wheel
