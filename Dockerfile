@@ -34,6 +34,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bzip2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install Python Packages useful for devs
+
+RUN pip install \
+    pytest \
+    scipy \
+    numpy \
+    transformers \
+    tokenizers \
+    jupyter \
+    ipython \
+    black \
+    flake8 \
+    mypy \
+    pre-commit \
+    pybind11 \
+    cython \
+    requests \
+    tqdm \
+    pyyaml \
+    click
+
 # Install CMake
 RUN curl -sSL https://github.com/Kitware/CMake/releases/download/v3.24.4/cmake-3.24.4-linux-x86_64.sh -o cmake.sh && \
     chmod +x cmake.sh && \

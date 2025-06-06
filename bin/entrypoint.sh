@@ -2,13 +2,12 @@
 set -e
 
 ### Configuration ###
-REPO_URL="${REPO_URL:-https://github.com/mlc-ai/mlc-llm.git}"
-REPO_BRANCH="${REPO_BRANCH:-main}"
-SOURCE_DIR="${SOURCE_DIR:-/root/mlc-llm}"
+SOURCE_DIR="${SOURCE_DIR:-/workspace/mlc-llm}"
 BUILD_DIR="${BUILD_DIR:-$SOURCE_DIR/build}"
 BUILD_TYPE="${BUILD_TYPE:-RelWithDebInfo}"
 INSTALL_PREFIX="${INSTALL_PREFIX:-$SOURCE_DIR/install}"
 
+# Feature toggles
 ENABLE_CUDA="${ENABLE_CUDA:-OFF}"
 ENABLE_VULKAN="${ENABLE_VULKAN:-OFF}"
 ENABLE_METAL="${ENABLE_METAL:-OFF}"
@@ -17,18 +16,36 @@ ENABLE_FLASHINFER="${ENABLE_FLASHINFER:-OFF}"
 CUDA_ARCH="${CUDA_ARCH:-80}"
 
 ### Functions ###
-clone_repo_if_needed() {
-  if [ ! -d "$SOURCE_DIR" ]; then
-    echo "[INFO] Cloning MLC-LLM from $REPO_URL (branch: $REPO_BRANCH)..."
-    git clone --recursive --branch "$REPO_BRANCH" "$REPO_URL" "$SOURCE_DIR"
+
+print_help() {
+  echo "Usage: docker run ... mlc-llm [DevEnvironment|build|test]"
+  echo
+  echo "  DevEnvironment  - Drop into a shell with dev tools preinstalled"
+  echo "  build           - Run cmake and build the MLC-LLM project"
+  echo "  test            - Run pytest from tests/python"
+  echo
+  echo "Environment Variables:"
+  echo "  SOURCE_DIR, BUILD_DIR, BUILD_TYPE, INSTALL_PREFIX"
+  echo "  ENABLE_CUDA, ENABLE_VULKAN, ENABLE_METAL, ENABLE_OPENCL, ENABLE_FLASHINFER, CUDA_ARCH"
+}
+
+validate_source_directory() {
+  if [ ! -d "$SOURCE_DIR/.git" ] || [ ! -f "$SOURCE_DIR/CMakeLists.txt" ]; then
+    echo "[ERROR] Source directory at $SOURCE_DIR is not a valid MLC-LLM repository."
+    echo "Please mount the source code correctly using:"
+    echo "  -v \$(pwd):/workspace/mlc-llm"
+    exit 1
   fi
 }
 
 initialize_submodules_if_needed() {
-  if [ -d "$SOURCE_DIR/.git" ] && [ -f "$SOURCE_DIR/.gitmodules" ]; then
+  if [ -f "$SOURCE_DIR/.gitmodules" ]; then
     echo "[INFO] Initializing git submodules..."
     cd "$SOURCE_DIR"
-    git submodule update --init --recursive
+    git submodule update --init --recursive || {
+      echo "[ERROR] Submodule initialization failed."
+      exit 1
+    }
   fi
 }
 
@@ -76,12 +93,6 @@ build_project() {
   cmake --build . --parallel "$(nproc)"
 }
 
-run_tests() {
-  echo "[INFO] Running tests..."
-  cd "$SOURCE_DIR/tests/python"
-  pytest .
-}
-
 launch_dev_environment() {
   echo "=============================="
   echo " Welcome to MLC-LLM Dev Shell "
@@ -92,34 +103,46 @@ launch_dev_environment() {
   echo "CMake Version   : $(cmake --version | head -n 1)"
   echo "Rust Version    : $(rustc --version)"
   echo "=============================="
-  exec /bin/bash --login
+  cd "$SOURCE_DIR"
+  exec bash
 }
 
-show_help() {
-  echo "Usage: docker run <image> [DevEnvironment|build|test]"
-  echo ""
-  echo "  DevEnvironment   Start an interactive shell"
-  echo "  build            Build the project"
-  echo "  test             Run pytest from tests/python"
-  echo ""
-  echo "If no argument is provided, this help message is shown."
+run_tests() {
+  if [ -d "$SOURCE_DIR/tests/python" ]; then
+    echo "[INFO] Running Python tests..."
+    cd "$SOURCE_DIR/tests/python"
+    pytest .
+  else
+    echo "[ERROR] Cannot find test directory at $SOURCE_DIR/tests/python"
+    exit 1
+  fi
 }
 
-### Main ###
-case "$1" in
+### Execution Flow ###
+ACTION="$1"
+
+validate_source_directory
+
+case "$ACTION" in
   DevEnvironment)
     launch_dev_environment
     ;;
   build)
-    clone_repo_if_needed
     initialize_submodules_if_needed
     generate_config_cmake
     build_project
     ;;
   test)
+    initialize_submodules_if_needed
     run_tests
     ;;
+  ""|help|--help|-h)
+    print_help
+    ;;
   *)
-    show_help
+    echo "[ERROR] Unknown option: $ACTION"
+    print_help
+    exit 1
     ;;
 esac
+
