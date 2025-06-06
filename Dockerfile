@@ -88,6 +88,15 @@ RUN curl https://sh.rustup.rs -sSf -o rustup-init && \
     rm rustup-init && \
     rm -rf /root/.rustup /root/.cargo
 
+# Install Miniconda
+RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh && \
+    bash miniconda.sh -b -p $CONDA_DIR && \
+    rm miniconda.sh && \
+    $CONDA_DIR/bin/conda clean -afy
+
+# Add Miniconda to PATH
+ENV PATH="/opt/conda/bin:$PATH"
+
 # Copy and set entrypoint
 COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
