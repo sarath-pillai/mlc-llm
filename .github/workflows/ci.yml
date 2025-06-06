@@ -20,8 +20,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install pytest
-        run: pip install pytest
+      - name: Install required Python packages
+        run: |
+          pip install pytest
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu mlc-llm-nightly-cpu
 
       - name: Run unittest script
         run: bash ci/task/test_unittest.sh
