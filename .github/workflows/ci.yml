@@ -101,9 +101,9 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Init submodules
-        run: git submodule update --init --recursive
 
       - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -150,10 +150,14 @@ jobs:
       - name: Generate config.cmake
         run: |
           mkdir -p build
+          install_prefix="${{ github.workspace }}/install"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            install_prefix=$(echo "$install_prefix" | sed 's|\\|/|g')
+          fi
           cat <<EOF > build/config.cmake
           set(TVM_SOURCE_DIR 3rdparty/tvm)
           set(CMAKE_BUILD_TYPE $BUILD_TYPE)
-          set(CMAKE_INSTALL_PREFIX ${{ github.workspace }}/install)
+          set(CMAKE_INSTALL_PREFIX ${install_prefix})
           set(USE_CUDA $ENABLE_CUDA)
           set(USE_VULKAN $ENABLE_VULKAN)
           set(USE_METAL $ENABLE_METAL)
