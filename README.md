@@ -62,13 +62,13 @@ The above command will start the compilation process.
 
 This repository includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that automates testing, building, and packaging of the MLC-LLM project across platforms like Windows & Linux.
 
-#### **How is the workflow Triggered ?**
+## **How is the workflow Triggered ?**
 The workflow is triggered when:
 - Pushes to the `master` branch
 - Creation of tags matching `v*` (used for releases)
 - Pull requests targeting `master`
 
-#### **How is the test cases Triggered ?**
+## **How is the test cases Triggered ?**
 
 There is a job named `test`. This is the very first job in the pipeline. This gets executed for each and every change in the repo (MRs & Pushes).
 
@@ -76,7 +76,7 @@ This job ensures correctness of unit tests and its coverage before any other sta
 
 - Executes tests via `ci/task/test_unittest.sh`
 
-#### **How is the docker image built and pushed to GH container registry ?**
+## **How is the docker image built and pushed to GH container registry ?**
 There is a job named `Docker Build & Publish to GHCR`. This job builds and publishes a Docker image to GitHub Container Registry (GHCR):
 
 - Authenticates with GHCR using `GITHUB_TOKEN`
@@ -86,7 +86,7 @@ There is a job named `Docker Build & Publish to GHCR`. This job builds and publi
 You can see docker images here: https://github.com/sarath-pillai/mlc-llm/pkgs/container/mlc-llm
 
 
-#### 🏗️ **Job: Build on Linux (`build-mlc-llm-linux`)**
+## 🏗️ **Job: Build on Linux (`build-mlc-llm-linux`)**
 This job builds the MLC-LLM project and generates a Python wheel:
 
 - Sets up the build environment and dependencies (e.g., `cmake`, `ninja`, `libopenblas`, etc.)
@@ -96,28 +96,28 @@ This job builds the MLC-LLM project and generates a Python wheel:
 - Packages the Python wheel (`python/dist/*.whl`)
 - If it's a release tag (`v*`), the wheel is uploaded to GitHub Releases
 
-#### 🪟 **Job: Build on Windows (`build-mlc-llm-windows`)**
+## 🪟 **Job: Build on Windows (`build-mlc-llm-windows`)**
 This job mirrors the Linux build but is tailored for Windows:
 
 - Uses Miniconda to manage the environment (via `build-environment.yaml`)
 - Runs the Windows build script (`ci\task\build_win.bat`)
 - Builds and uploads the wheel on release tag
 
-#### 🔒 **Permissions**
+## 🔒 **Permissions**
 The workflow grants the following permissions:
 - `contents: write` – required for uploading release assets
 - `packages: write` – required for pushing Docker images to GHCR
 
 ---
 
-#### 📦 **Release Artifacts**
+## 📦 **Release Artifacts**
 If a release tag (e.g., `v1.0.0`) is pushed:
 - Docker image is tagged and pushed to `ghcr.io/sarath-pillai/mlc-llm`
 - Python wheels (`.whl` files) for both Linux and Windows are uploaded to the GitHub Release
 
 You can find the latest releases here: https://github.com/sarath-pillai/mlc-llm/releases
 
-#### CI/CD Flowchart
+## CI/CD Flowchart
 
 This diagram illustrates the workflow defined in `.github/workflows/ci.yml`:
 
