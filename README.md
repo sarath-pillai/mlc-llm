@@ -96,8 +96,7 @@ The workflow grants the following permissions:
 
 #### 🧭 CI/CD Flowchart
 This diagram illustrates the workflow defined in `.github/workflows/ci.yml`:
-
-![CI/CD Pipeline](./flow-chart.png)
+<img src="./flow-chart.png" alt="CI/CD Pipeline" width="600"/>
 ---
 
 ### 📦 **Release Artifacts**
