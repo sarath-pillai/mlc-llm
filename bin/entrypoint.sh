@@ -107,15 +107,17 @@ launch_dev_environment() {
   exec bash
 }
 
+build_python_wheel() {
+  cd "$SOURCE_DIR/python"
+  python setup.py bdist_wheel
+}
+
+
 run_tests() {
-  if [ -d "$SOURCE_DIR/tests/python" ]; then
-    echo "[INFO] Running Python tests..."
-    cd "$SOURCE_DIR/tests/python"
-    pytest .
-  else
-    echo "[ERROR] Cannot find test directory at $SOURCE_DIR/tests/python"
-    exit 1
-  fi
+    pip install pytest
+    pip install torch --index-url https://download.pytorch.org/whl/cpu
+    pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu mlc-llm-nightly-cpu
+    bash ci/task/test_unittest.sh
 }
 
 ### Execution Flow ###
@@ -131,6 +133,7 @@ case "$ACTION" in
     initialize_submodules_if_needed
     generate_config_cmake
     build_project
+    build_python_wheel
     ;;
   test)
     initialize_submodules_if_needed
