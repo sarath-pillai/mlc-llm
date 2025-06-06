@@ -182,7 +182,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mlc-cmake-
 
-      - name: Configure and build
+      - name: Configure and build (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           mkdir -p build
           cd build
@@ -196,6 +197,10 @@ jobs:
                 ..
           cmake --build . --parallel ${{ env.CORES }}
         shell: bash
+
+      - name: Configure and build (Windows)
+        if: matrix.os == 'windows-latest'
+        run: ci/task/build_win.bat
 
       - name: Build Python wheel
         run: |
