@@ -11,7 +11,7 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
  
@@ -150,6 +150,16 @@ jobs:
             echo "set(FLASHINFER_CUDA_ARCHITECTURES $CUDA_ARCH)" >> build/config.cmake
             echo "set(CMAKE_CUDA_ARCHITECTURES $CUDA_ARCH)" >> build/config.cmake
           fi
+
+      - name: Cache CMake build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+            ${{ github.workspace }}/install
+          key: ${{ runner.os }}-mlc-cmake-${{ hashFiles('**/CMakeLists.txt', '**/config.cmake') }}
+          restore-keys: |
+            ${{ runner.os }}-mlc-cmake-
 
 
       - name: Configure and build
