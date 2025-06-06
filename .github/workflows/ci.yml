@@ -95,8 +95,10 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
+      
+      - name: Init nested submodules manually
+        run: |
+          git submodule update --init --recursive
 
       - name: Install dependencies
         run: |
