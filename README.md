@@ -7,7 +7,6 @@ This repository has been created to demonstrate the tasks outlined in an assignm
 As this repo primarily deals with docker & github container registry (GHCR). There are mainly two prerequisites.
 
 - Docker cli installed and available (```docker ps``` should work on your system)
-- A Github PAT(personal access token), for pulling docker image to your local.
 
 ## **How to Pull the docker Image?**
 
@@ -22,7 +21,6 @@ You can pull this image to your local using the below command.
 docker pull ghcr.io/sarath-pillai/mlc-llm:latest
 ```
 
-The above will prompt you for a username and password. Use your github username, and instead of password, use PAT. 
 
 ## **How to launch development environment (interactive shell) ?**
 
