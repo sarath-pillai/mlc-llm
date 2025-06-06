@@ -11,10 +11,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    env:
-      MLC_CI_SETUP_DEPS: "1"
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
