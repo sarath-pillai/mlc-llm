@@ -1,26 +1,34 @@
-> 📘 **Introduction**  
-> This repository has been created to demonstrate the tasks outlined in an assignment.  
->  
-> 🗂️ It includes a copy of the original source:  
-> [https://github.com/mlc-ai/mlc-llm](https://github.com/mlc-ai/mlc-llm)  
->  
-> ✍️ In addition to the content from the original project, this repository also features  
-> supplementary work developed specifically to meet the assignment's deliverables.
+### **What is this?**
 
-### 🐳 **Docker Image**
+This repository has been created to demonstrate the tasks outlined in an assignment. It includes a copy of the original source:  https://github.com/mlc-ai/mlc-llm . In addition to the content from the original project, this repository also features supplementary work developed specifically to meet the assignment's deliverables.
 
-> This project includes a Docker image preconfigured with Python 3,Miniconda, Rust and several other dev dependencies. The idea is to use the docker image as a Development environment. Basically a single docker image that serves two purposes.
+### **Any Prerequisites?**
+
+As this repo primarily deals with docker & registry. There are mainly two prerequisites.
+
+- Docker cli installed and available (```docker ps``` should work on your system)
+- A Github PAT(personal access token), for pulling docker image to your local.
+
+### **How to Pull the docker Image?**
+
+> This project builds a Docker image preconfigured with Python 3, Miniconda, Rust and several other dev dependencies. The idea is to use the docker image as a Development environment. Basically a single docker image that serves two purposes.
 
 - An interactive shell, with all required tools to build/test MLC LLM.
 - An unattended local build environment. Devs can trigger build locally without any interaction. 
 
-
-### Development environment (Interactive shell)
-Assuming you have already cloned this repo, and your current working directory is the root of the project, run the below commands. 
+You can pull this image to your local using the below command. 
 
 ```bash
 docker pull ghcr.io/sarath-pillai/mlc-llm:latest
 ```
+
+The above will prompt you for a username and password. Use your github username, and instead of password, use PAT. 
+
+### How to launch development environment (interactive shell) ?
+
+This step assumes the below. 
+- You have cloned this repo locally. 
+- You have pulled the docker image locally. 
 
 ```bash
 docker run -v .:/workspace/mlc-llm -it ghcr.io/sarath-pillai/mlc-llm:latest DevEnvironment
@@ -38,8 +46,11 @@ root@e32352e04240:/workspace/mlc-llm#
 
 You are now in an interactive shell with all required dependencies for dev work. 
 
-### Build environment (Non interactive local build)
-Ensure you have a local clone of this repository, and the below command must be fired from within the root of the local clone. 
+### How to launch a build environment (non interactive local build)
+This step assumes the below. 
+- You have cloned this repo locally. 
+- You have pulled the docker image locally. 
+
 
 ```bash
 docker run -v .:/workspace/mlc-llm -it ghcr.io/sarath-pillai/mlc-llm:latest build
