@@ -94,6 +94,10 @@ The workflow grants the following permissions:
 - `contents: write` – required for uploading release assets
 - `packages: write` – required for pushing Docker images to GHCR
 
+#### 🧭 CI/CD Flowchart
+This diagram illustrates the workflow defined in `.github/workflows/ci.yml`:
+
+![CI/CD Pipeline](./flow-chart.png)
 ---
 
 ### 📦 **Release Artifacts**
